@@ -8,3 +8,7 @@
 * 执行 php receive.php;
 * 在另一个bash中执行 php send.php;
 * 此时注意看输出；
+
+## 默认账号
+
+RabbitMQ默认创建了一个账号guest，密码也为guest，可以通过此账号密码连接RabbitMQ服务器。

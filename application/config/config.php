@@ -100,7 +100,10 @@ $config['charset'] = 'UTF-8';
 | setting this variable to TRUE (boolean).  See the user guide for details.
 |
 */
-$config['enable_hooks'] = FALSE;
+/**
+ * 开启hook的支持
+ */
+$config['enable_hooks'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------

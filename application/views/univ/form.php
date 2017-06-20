@@ -9,7 +9,7 @@
         'id' => 'form_id',
         'class' => 'form_class',
     ];
-    echo form_open('univ/formcontroller/form_test', $form_attr);
+    echo form_open('http://localhost:8080/php_demos/index.php/univ/formcontroller/form_test', $form_attr);
 
     //input, 用来定义input标签的属性集合
     $data = [

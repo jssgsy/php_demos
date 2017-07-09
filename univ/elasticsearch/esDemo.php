@@ -24,7 +24,7 @@ $hosts = [
 ];
 
 $client = ClientBuilder::create()->setHosts($hosts)->build();
-//可以看一看$client有哪些恨我自己
+//可以看一看$client有哪些成员变量
 //var_dump($client);
 
 //在elasticsearch-php中，所有的配置都是通过关联数组完成的
@@ -127,10 +127,15 @@ $params = [
 $response = $client->indices()->create($params);
 print_r($response);
 
-//获取索引的Settings，相应的有putSettings方法
+//获取索引的Setting，相应的有putSettings方法
 $params = [
     'index' => 'my_index'
 ];
+//获取多个索引的Settings
+/*$params = [
+    'index' => ['my_index','shakespeare']
+];*/
+//不传参数，则为获取所有索引的Setting
 $response = $client->indices()->getSettings($params);
 print_r($response);
 
@@ -139,7 +144,27 @@ print_r($response);
 $params = [
     'index' => 'my_index'
 ];
+//获取多个索引的Mapping
+/*$params = [
+    'index' => ['my_index','shakespeare']
+];*/
+
+//不传参数，则为获取所有索引的Mapping
 $response = $client->indices()->getMapping($params);
+print_r($response);
+
+
+//获取索引的alias，，相应的有putAlias方法
+$params = [
+    'index' => 'my_index'
+];
+//获取多个索引的alias
+/*$params = [
+    'index' => ['my_index','shakespeare']
+];*/
+
+//不传参数，则为获取所有索引的alias
+$response = $client->indices()->getAliases($params);
 print_r($response);
 
 echo '</pre>';

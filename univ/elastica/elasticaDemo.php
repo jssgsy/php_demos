@@ -88,7 +88,7 @@ var_dump($data);
 
 //既然使用elastica，那当然要用面向对象的方式，这里的核心是要理解，每个es中的概念在elastica中都由对应的对象表示
 
-//match查询
+//简单查询：以match查询为例
 $match = new \Elastica\Query\Match();
 $match->setField('name', 'Jones');
 
@@ -97,13 +97,86 @@ $match->setField('name', 'Jones');
  * AbstractQuery也可以，其实还有许多其它类型也可以，可追踪源码到Elastica/Query的create方法查看
  */
 $resultSet = $type->search($match);
-echo '命中数为：' . $resultSet->getTotalHits();
 
+//用原生es数组形式表示查询，如上面的面向对象的查询等价于如下形式
+/*$params = [
+    "query" => [
+        "match" => [
+            "name" => "Jones"
+        ]
+    ]
+];*/
+$resultSet = $type->search($match);
+echo '命中数为：' . $resultSet->getTotalHits();
 $results = $resultSet->getResults();
 foreach ($results as $result) {
     $data = $result->getData();
     var_dump($data);
 }
+/**
+ * $matchAll = new \Elastica\Query\MatchAll();
+    $resultSet = $type->search($matchAll);//匹配此类型下的所有文档
+ * $term = new \Elastica\Query\Term();
+    $resultSet = $type->search($term);//term查询
+ * 诸如此类
+ */
+
+/**
+ * 复合查询
+ * 重点是理解方法BoolQuery对象的方法(如addShould)的参数类型，addShould,addMust,addMustNot等方法参数都是一个普通查询，如match,term等
+ */
+//Bool已被废弃（From PHP7 bool is reserved word and this class will be removed in further Elastica releases），使用BoolQuery类
+//$bool = new \Elastica\Query\Bool();
+
+$boolQuery = new \Elastica\Query\BoolQuery();
+
+$match = new \Elastica\Query\Match();
+$match->setField('name', 'Jones');
+//在复合查询(bool)下新增一个must查询
+$boolQuery->addMust($match);
+
+$match2 = new \Elastica\Query\Match();
+$match2->setField('tweet', 'powerful');
+//在复合查询(bool)下新增一个must查询
+$boolQuery->addMust($match2);
+
+$term = new \Elastica\Query\Term();
+$term->setTerm('date', '2014-09-17');
+//在复合查询(bool)下新增一个should查询
+$boolQuery->addShould($term);
+
+$resultSet = $type->search($boolQuery);
+$results = $resultSet->getResults();
+echo '命中数为：' . $resultSet->getTotalHits();
+foreach ($results as $result) {
+    var_dump($result->getData());
+}
+
+
+//当然，复合查询条件也可以通过原生的数组形式，上述查询等价如下：
+//注意，这里的示例中must查询下有两个简单查询，注意其写法
+/*$params = [
+    "query" => [
+        "bool" => [
+            "must" => [
+                'match' => [
+                    'name' => 'Jones'
+                ],
+                'match' => [
+                    'tweet' => 'powerful'
+                ]
+            ],
+            'should' => [
+                'term' => [
+                    "date" => "2014-09-17"
+                ]
+            ]
+        ]
+    ]
+];
+$resultSet = $type->search($params);*/
+
+
 
 
 

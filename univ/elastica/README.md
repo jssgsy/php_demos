@@ -10,3 +10,4 @@
 # 核心
 * 不论是使用elasticsearch-php还是elastica，这两者都只是一个客户端，或者说是es的两者api实现，用来供外界使用，核心还是在于对es本身的理解与使用；
 * 因为elastica是用面向对象的方式使用es，因此一个非常重要的观念就是，每一个es中的概念在elastica都有对应的对象表示。如索引，类型，文档等等。需要加倍注意的是，搜索中的概念也是如此，如es中的match查询，在elastica中对应有Match类，term查询对应有Term类，且将相应查询的参数封装到对应的类中。掌握了这个思维方式，学习elastica便会非常轻松。
+* 对于复合查询(BoolQuery)，需要注意的是其方法的参数类型，其实就是每个简单查询对应的对象(如match,term等)，具体看elasticaDemo.php中的示例。

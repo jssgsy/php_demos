@@ -33,22 +33,69 @@ class DBController extends CI_Controller {
 
     public function index() {
         /**
-         * 普通查询
+         * 1. 普通查询
          * query等方法位于CI_DB_driver，此时CI_DB继承自CI_DB_driver
          */
         $this->get_all();
         $this->get_by_id(1);
         $this->get_by_id_and_name(1, 'univ');
 
-        //查询辅助函数
+
+        //2. 查询辅助函数
         $this->query_util();
 
+
         /**
-         * 查询构造器
+         * 3. 查询构造器
          * get等方法都位于CI_DB_query_builder类中，此时CI_DB继承自CI_DB_query_builder
          */
-        $result = $this->db->get($this->table_name)->result();
+        /**
+         * get($table = '', $limit = NULL, $offset = NULL)第二个参数和第三个参数用来设置limit语句
+         * $limit:获取多少条记录；
+         * $offset：用第几条开始，从0开始计数
+         */
+        $result = $this->db->get($this->table_name, 4, 0)->result();
         $this->show_result($result);
+        /**
+         * 这里只先练习查询构造器用来插入数据，查询数据就是组装where,like,group by等等
+         * $insert_data也可以是对象形式；
+         * 注意，$this->db->insert方法返回的不是插入记录的id，成功返回true，失败返回false，要获取插入记录的id，用$this->db->insert_id()
+         */
+        $insert_data = ['stu_id' => 100005, 'name' => 'aaa'];
+        $this->db->insert($this->table_name, $insert_data);
+        echo '刚插入的记录的id为：' . $this->db->insert_id() . '<br>';
+
+        //批量插入，每个元素都是一个待插入的记录，insert_batch的返回值是插入的记录数
+        $batch_insert_data = [
+            ['stu_id' => 100006, 'name' => 'bbb'],
+            ['stu_id' => 100007, 'name' => 'ccc'],
+            ['stu_id' => 100008, 'name' => 'ddd'],
+        ];
+        $affected_rows = $this->db->insert_batch($this->table_name, $batch_insert_data);
+        echo '批量插入的记录数为：' . $affected_rows . '<br>';
+
+        /**
+         * update方法成功则返回true，失败则返回false;
+         * update_batch返回更新的记录数，调用affected_rows可能不准确
+         */
+        $update_data = ['name' => 'eee'];
+        //第三个参数是where字句
+        $this->db->update($this->table_name, $update_data, 'id = 20');
+        //真正要更新的数据其实是stu_id，这里的id是where字句的key，表示修改此id的记录中stu_id的值
+        $batch_update_data = [
+            ['id' => 10, 'stu_id' => 100010],
+            ['id' => 11, 'stu_id' => 100011],
+            ['id' => 12, 'stu_id' => 100012],
+        ];
+        //第三个参数是where字句的key，必须出现在$batch_update_data中
+        $affected_rows = $this->db->update_batch($this->table_name, $batch_update_data, 'id');
+        echo '批量更新的记录数为：' . $affected_rows . '<br>';
+
+        /**
+         * delete方法第二个参数是where字句
+         */
+        $this->db->delete($this->table_name, 'id=30');
+
     }
 
     /**

@@ -40,6 +40,9 @@ class DBController extends CI_Controller {
         $this->get_by_id(1);
         $this->get_by_id_and_name(1, 'univ');
 
+        //查询辅助函数
+        $this->query_util();
+
         /**
          * 查询构造器
          * get等方法都位于CI_DB_query_builder类中，此时CI_DB继承自CI_DB_query_builder
@@ -57,6 +60,7 @@ class DBController extends CI_Controller {
         $sql = 'select * from' . $this->table_name;
         $result = $this->db->query($sql)->result();
         $this->show_result($result);
+        echo '刚被执行的sql语句为：' . $this->db->last_query() . '<br>';
 
         /**
          * 可以给result方法传递一个参数，这个字符串参数代表你想要把每个结果转换成某个类的类名，这个类必须已经加载
@@ -103,6 +107,43 @@ class DBController extends CI_Controller {
         //占位符的用法
         $result = $this->db->query($sql,[$id, $name])->result();
         $this->show_result($result);
+    }
+
+    /**
+     * 查询辅助函数
+     * insert_id():当执行 INSERT 语句时，这个方法返回新插入行的ID;
+     * affected_rows():当执行 INSERT、UPDATE 等写类型的语句时，这个方法返回受影响的行数
+     * last_query():返回上一次执行的查询语句（是查询语句，不是结果）,注意，此方法可用在任意查询语句后，有用
+     * count_all($table_name)：返回数据表的总行数；
+     * platform()：输出你正在使用的数据库平台（MySQL，MS SQL，Postgres 等）；
+     * version()：输出你正在使用的数据库版本
+     */
+    private function query_util() {
+        $sql = 'insert into ' . $this->table_name . '(stu_id, name)values(?,?)';
+        $this->db->query($sql, [100001, '李四']);
+        echo '刚插入的记录的id为：' . $this->db->insert_id() . '<br>';
+        echo '刚插入的记录被影响的行数为：' . $this->db->affected_rows() . '<br>';
+        echo '刚被执行的sql语句为：' . $this->db->last_query() . '<br>';
+        echo '表 '. $this->table_name . '中的总记录数为：' . $this->db->count_all($this->table_name) . '<br>';
+
+        echo '使用的数据库平台为：' . $this->db->platform() . '<br>';
+        echo '使用的数据库版本为：' . $this->db->version() . '<br>';
+
+        /**
+         * insert_string():简化了 INSERT 语句的书写，它返回一个正确格式化的 INSERT 语句;
+         * update_string():简化了 UPDATE 语句的书写，它返回一个正确格式化的 UPDATE 语句;
+         */
+        $insert_data = ['stu_id' => 100003, 'name' => '五五'];
+        $insert_sql = $this->db->insert_string($this->table_name, $insert_data);
+        echo 'insert_string()返回的的sql语句为：' . $insert_sql . '<br>';
+        $this->db->query($insert_sql);
+        echo '刚插入的记录的id为：' . $this->db->insert_id() . '<br>';
+
+        $update_data = ['stu_id' => 100003, 'name' => '五五五五'];
+        $where = 'id = 8';
+        $update_sql = $this->db->update_string($this->table_name, $update_data, $where);
+        echo 'update_string()返回的的sql语句为：' . $update_sql . '<br>';
+        $this->db->query($update_sql);
     }
 
     /**

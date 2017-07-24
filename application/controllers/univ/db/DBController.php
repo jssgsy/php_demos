@@ -11,7 +11,7 @@
  *  mysql(mariadb)已经启动;
  *  用户：test,密码：123，参见database.php文件
  *
- * result()方法没有找到数据则返回空数组；
+ *
  *
  */
 class DBController extends CI_Controller {
@@ -48,16 +48,47 @@ class DBController extends CI_Controller {
         $this->show_result($result);
     }
 
+    /**
+     * 演示result方法:
+     *  result()方法以数组对象的形式返回，即数组中的每个元素都是对象,找不到则返回空数组
+     * 类似的方法有result_array:返回数组中的每个元素还是数组
+     */
     private function get_all() {
         $sql = 'select * from' . $this->table_name;
-        //result()方法以数组对象的形式返回，即数组中的每个元素都是对象,找不到则返回空数组
         $result = $this->db->query($sql)->result();
         $this->show_result($result);
 
+        /**
+         * 可以给result方法传递一个参数，这个字符串参数代表你想要把每个结果转换成某个类的类名，这个类必须已经加载
+         * 如下表示将查询的结果集中的每条记录转换成student类，一般不这样用
+         * 注意，下面的代码不能运行，因为student类还没有被加载
+         */
+        /*$result = $this->db->query($sql)->result('student');
+        foreach ($result as $stu) {
+            $stu->id;
+            $stu->stu_id;
+            $stu->name;
+        }*/
+
     }
 
+    /**
+     * 演示CI_DB_result类的常用方法
+     *  result();
+     *  result_array();
+     *  num_rows()：返回查询结果的行数
+     *  num_fields()：该方法返回查询结果的字段数（列数）
+     *  list_fields()：返回查询的列名，索引数组形式
+     *  first_row();
+     *  last_row();
+     *  field_data()：返回查询的字段的元数据，一般不用
+     */
     private function get_by_id($id = 1){
         $sql = 'SELECT * FROM ' . $this->table_name . 'where id = ?';
+        echo '返回查询结果的行数为：' . $this->db->query($sql, [$id])->num_rows() . '<br>';
+        echo '返回查询结果的字段数为：' . $this->db->query($sql, [$id])->num_fields() . '<br>';
+        var_dump($this->db->query($sql, [$id])->list_fields());
+        var_dump($this->db->query($sql, [$id])->field_data());
         $result = $this->db->query($sql, [$id])->result();
         $this->show_result($result);
     }

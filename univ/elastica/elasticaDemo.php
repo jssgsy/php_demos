@@ -56,11 +56,97 @@ var_dump($params);
  * $id = $document->getId();//获取此文档的id，这里即9
  */
 
+/**
+ * 创建文档，用addDocument方法
+ * 以在gb/tweet下新建文档为例
+ */
+$doc_id = 5;
+//注意，这里特意没有插入tweet字段的值,所以插入的文档中没有tweet字段
+$insert_data = [
+    'user_id' => 22,
+    'name' => 'unsssiv',
+    'date' => '2017-07-25'
+];
+$doc = new \Elastica\Document($doc_id, $insert_data);
+/*
+ * 如果被插入文档的$doc_id已经存在，则会被覆盖掉
+ * addDocument方法返回的是一个\Elastica\Response对象,其常用的方法有：
+ * isOk():文档是否被插入成功；
+ * 其它方法查看源码即可；
+ */
+$insert_result = $type->addDocument($doc);
+if ($insert_result->isOk()) {
+    echo '文档插入成功';
+}
+var_dump($insert_result);
+
+/**
+ * 批量创建文档，用addDocuments（复数形式）
+ */
+$docs = [];
+$docs[] = new \Elastica\Document(21, ['user_id' => 22, 'name' => 'unsssiv']);
+$docs[] = new \Elastica\Document(22, ['user_id' => 23, 'name' => 'fcsu', 'date' => '2017-07-25','age' => 27]);
+$docs[] = new \Elastica\Document(24, ['user_id' => 24, 'city' => 'hangzhou', 'interest' => 'movie']);
+
+/**
+ * 与addDocument方法一样，如果被插入文档的$doc_id已经存在，则会被覆盖掉
+ * addDocuments方法的返回类型为\Elastica\Bulk\ResponseSet，其常用的方法有：
+ * isOk():文档是否被插入成功；
+ * 其它方法查看源码即可；
+ */
+$insert_result = $type->addDocuments($docs);
+if ($insert_result->isOk()) {
+    echo '文档批量插入成功' . '<br>';
+}
+//var_dump($insert_result);
+
+/**
+ * 更新文档，用updateDocument方法，与addDocument方法的用法一模一样
+ */
+$doc_id = 5;
+$update_data = [
+    'user_id' => 22,
+    'name' => 'unsssiv',
+    'date' => '2016-07-25'
+];
+/**
+ * 注意：如果被更新的$doc_id不存在，则会抛出异常
+ * 返回的是\Elastica\Response对象，常见的方法有：
+ * isOk：:文档是否被更新成功；
+ */
+$doc = new \Elastica\Document($doc_id, $update_data);
+$update_result = $type->updateDocument($doc);
+if ($update_result->isOk()) {
+    echo '更新文档成功' . '<br>';
+}
+var_dump($update_result);
+
+/**
+ * 批量创建文档,用updateDocuments方法
+ * 特别注意：只要有一个文档没有更新成功，便会抛出异常，但并不是原子操作，能更新成功的会更新成功
+ * addDocuments方法的返回类型为\Elastica\Bulk\ResponseSet，常用的方法有：
+ * isOK()：文档是否被更新成功；
+ *
+ */
+$docs = [];
+$docs[] = new \Elastica\Document(21, ['user_id' => 22, 'name' => 'aaaaa']);
+//没有id为220000的文档，但id为21与24的文档都会被更新
+$docs[] = new \Elastica\Document(220000, ['user_id' => 23, 'name' => 'bbbb', 'date' => '2017-07-25','age' => 27]);
+$docs[] = new \Elastica\Document(24, ['user_id' => 24, 'city' => 'hubei', 'interest' => 'movie']);
+try{
+    $update_result = $type->updateDocuments($docs);
+    if ($update_result->isOk()) {
+        echo '批量更新文档成功' . '<br>';
+    }
+}catch (Exception $ex) {
+    var_dump($ex);
+}
+
 
 //下面是常用的搜索操作
 /**
  * 搜索返回的对象是Elastica\ResultSet类型
- * 搜索即可以在$index对象下进行，也可以在$type对象下进行。但最终都会上溯到$index对象中
+ * 搜索即可以在$index对象下进行，也可以在$type对象下进行。但最终都会上溯到Elastica/Search对象中,Search是真正的搜索对象
  */
 //搜索此索引下的所有文档，$resultSet包含了搜索结果的所有信息，过于庞大
 //$resultSet = $index->search();
@@ -73,7 +159,7 @@ $totalHits = $resultSet->getTotalHits();
 var_dump($totalHits);
 /**
  * $maxScore = $resultSet->getMaxScore();//得分，即es搜索结果中hits.max_score字段的值;
- * $results = $resultSet->getResults();//返回的是一个数组，每个元素是一个Elastica\Result对象，即es搜索时返回的结果，包括元字段信息与文档字段信息
+ * $results = $resultSet->getResults();//返回的是一个数组，每个元素是一个Elastica\Result对象，即es搜索时返回结果中hits.hits数组下的一个对象，包括元字段信息与文档字段信息
     var_dump($results[0]);
  * $hit = $results[0]->getHit();//返回的即es搜索时返回结果中的最底层hits字段的内容,即_index,_type,_id,_version,_source字段的值
     var_dump($hit);
@@ -175,8 +261,6 @@ foreach ($results as $result) {
     ]
 ];
 $resultSet = $type->search($params);*/
-
-
 
 
 

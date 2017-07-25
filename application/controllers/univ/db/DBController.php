@@ -36,13 +36,13 @@ class DBController extends CI_Controller {
          * 1. 普通查询
          * query等方法位于CI_DB_driver，此时CI_DB继承自CI_DB_driver
          */
-        $this->get_all();
+        /*$this->get_all();
         $this->get_by_id(1);
         $this->get_by_id_and_name(1, 'univ');
 
 
         //2. 查询辅助函数
-        $this->query_util();
+        $this->query_util();*/
 
 
         /**
@@ -72,6 +72,8 @@ class DBController extends CI_Controller {
             ['stu_id' => 100008, 'name' => 'ddd'],
         ];
         $affected_rows = $this->db->insert_batch($this->table_name, $batch_insert_data);
+        ////INSERT INTO `student` (`name`, `stu_id`) VALUES ('bbb',100006), ('ccc',100007), ('ddd',100008)
+        echo '刚执行的批量插入的sql语句为：' . $this->db->last_query() . '<br>';
         echo '批量插入的记录数为：' . $affected_rows . '<br>';
 
         /**
@@ -83,12 +85,26 @@ class DBController extends CI_Controller {
         $this->db->update($this->table_name, $update_data, 'id = 20');
         //真正要更新的数据其实是stu_id，这里的id是where字句的key，表示修改此id的记录中stu_id的值
         $batch_update_data = [
-            ['id' => 10, 'stu_id' => 100010],
-            ['id' => 11, 'stu_id' => 100011],
-            ['id' => 12, 'stu_id' => 100012],
+            ['id' => 10, 'stu_id' => 100010, 'name' => 'rrr'],
+            ['id' => 11, 'stu_id' => 100011, 'name' => 'ppp'],
+            ['id' => 12, 'stu_id' => 100012, 'name' => 'sss'],
         ];
         //第三个参数是where字句的key，必须出现在$batch_update_data中
         $affected_rows = $this->db->update_batch($this->table_name, $batch_update_data, 'id');
+        /**
+         * UPDATE `student` SET `stu_id` = CASE
+         * WHEN `id` = 10 THEN 100010
+         * WHEN `id` = 11 THEN 100011
+         * WHEN `id` = 12 THEN 100012
+         * ELSE `stu_id` END,
+         * `name` = CASE
+         * WHEN `id` = 10 THEN 'rrr'
+         * WHEN `id` = 11 THEN 'ppp'
+         * WHEN `id` = 12 THEN 'sss'
+         * ELSE `name` END
+         * WHERE `id` IN(10,11,12)
+         */
+        echo '刚执行的批量更新的sql语句为：' . $this->db->last_query() . '<br>';
         echo '批量更新的记录数为：' . $affected_rows . '<br>';
 
         /**

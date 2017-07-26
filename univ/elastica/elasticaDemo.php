@@ -104,10 +104,15 @@ if ($insert_result->isOk()) {
  * 更新文档，用updateDocument方法，与addDocument方法的用法一模一样
  */
 $doc_id = 5;
+/**
+ * 假设要更新的id为$doc_id的文档中的字段有十个，这里的$update_data中只给出了其中的三个，则更新后文档中仍然还是十个字段。
+ * 即es中的更新其实是按需更新。当然，如果$update_data给出了原来文档中没有的字段，则该字段将被添加。
+ */
 $update_data = [
     'user_id' => 22,
     'name' => 'unsssiv',
-    'date' => '2016-07-25'
+    'date' => '2016-07-25',
+    'sex' => 'man'
 ];
 /**
  * 注意：如果被更新的$doc_id不存在，则会抛出异常

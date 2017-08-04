@@ -169,7 +169,7 @@ var_dump($totalHits);
  * $hit = $results[0]->getHit();//返回的即es搜索时返回结果中的最底层hits字段的内容,即_index,_type,_id,_version,_source字段的值
     var_dump($hit);
  *
- * $data = $resultSet->getResponse()->getData();//返回的即是es搜索的完整结果,是Elastica/Reponse对象，$resultSet->getTotalHits()与$resultSet->getMaxScore()获取其实就是这里结果的hits.total与hits.max_score字段的值
+ * $data = $resultSet->getResponse()->getData();//getResponse返回的是Elastica\Response对象，getData返回的即是es搜索的完整结果,数组形式，$resultSet->getTotalHits()与$resultSet->getMaxScore()获取其实就是这里结果的hits.total与hits.max_score字段的值
     var_dump($data);
  */
 $results = $resultSet->getResults();

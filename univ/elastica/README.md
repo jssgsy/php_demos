@@ -51,3 +51,4 @@
   }
 }
 ```
+![elastica与原生es元素对应关系](https://github.com/jssgsy/php_demos/raw/master/pics/elastica与原生es元素对应关系.png)

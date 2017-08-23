@@ -48,7 +48,11 @@ class ExtController extends My_Controller {
     public function demo_model() {
         $this->load->model('univ/DemoModel');
 
-        // 与library不同，加载后的model调用区分大小写，$this->demomodel是错误的
+        /**
+         * 与library不同，加载后的model调用区分大小写，$this->demomodel是错误的
+         * 如果用的是$this->load->model('univ/DemoModel'),则用法为$this->DemoModel；
+         * 如果用的是$this->load->model('univ/demomodel'),则用法为$this->demomodel；
+         */
         $this->DemoModel->func1();
     }
 

@@ -24,6 +24,9 @@ class ExtController extends My_Controller {
      */
     public function demo_library() {
         $this->load->library('univ/DemoLibrary');
+        /**
+         * 注意，library的调用只能用全部的小写，跟踪CI_Loader的library源码
+         */
         $this->demolibrary->demo_func();
 
     }

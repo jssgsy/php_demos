@@ -55,6 +55,7 @@ class ExtController extends My_Controller {
          * 与library不同，加载后的model调用区分大小写，$this->demomodel是错误的
          * 如果用的是$this->load->model('univ/DemoModel'),则用法为$this->DemoModel；
          * 如果用的是$this->load->model('univ/demomodel'),则用法为$this->demomodel；
+         * 最保险的方法是，$this->load->model('文件名')，即文件名大写这里就大写，文件名小写这里就小写，这样就可以避免不同系统下区分大小写的坑
          */
         $this->DemoModel->func1();
     }

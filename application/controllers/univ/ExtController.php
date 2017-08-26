@@ -68,4 +68,12 @@ class ExtController extends My_Controller {
         new \React\Promise\Exception\LengthException();
     }
 
+    public function demo_config() {
+        $this->load->config('univ/myconfig');
+        $name = $this->config->item('univ_name');
+        $name_dev = $this->config->item('univ_name_dev');
+        echo '全局配置文件config/univ/myconfig.php中的univ_name项为： ' . $name . '<br>';
+        echo '局部配置文件config/development/univ/myconfig.php中的univ_name_dev项为： ' . $name_dev . '<br>';
+    }
+
 }

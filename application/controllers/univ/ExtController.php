@@ -6,7 +6,7 @@
  * Time: 20:23
  *
  * 继承自扩展CI_Controller的My_Controller
- * 仅是测试My_Controller的正确性
+ * 测试CI的各种小功能
  */
 
 class ExtController extends My_Controller {
@@ -58,6 +58,14 @@ class ExtController extends My_Controller {
          * 最保险的方法是，$this->load->model('文件名')，即文件名大写这里就大写，文件名小写这里就小写，这样就可以避免不同系统下区分大小写的坑
          */
         $this->DemoModel->func1();
+    }
+
+    /**
+     * 测试CI集成composer，使用composer的自动加载
+     * 此时不用require进LengthException所在的文件；
+     */
+    public function demo_composer() {
+        new \React\Promise\Exception\LengthException();
     }
 
 }

@@ -139,7 +139,11 @@ $config['subclass_prefix'] = 'MY_';
 | Note: This will NOT disable or override the CodeIgniter-specific
 |	autoloading (application/config/autoload.php)
 */
-$config['composer_autoload'] = FALSE;
+/**
+ * 1. 设置为true则使用composer的自动加载，但如上所述，此时的目录为application/vendor/autoload.php
+ * 2. 设置值为真实的vendor/autoload.php路径（重要：不能使用相对路径）；
+ */
+$config['composer_autoload'] = '/vagrant/php_demos/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------

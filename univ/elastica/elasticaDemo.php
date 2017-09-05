@@ -219,6 +219,9 @@ foreach ($results as $result) {
 //Bool已被废弃（From PHP7 bool is reserved word and this class will be removed in further Elastica releases），使用BoolQuery类
 //$bool = new \Elastica\Query\Bool();
 
+// 最顶层的query查询字段
+$query = new \Elastica\Query();
+
 $boolQuery = new \Elastica\Query\BoolQuery();
 
 $match = new \Elastica\Query\Match();
@@ -236,7 +239,31 @@ $term->setTerm('date', '2014-09-17');
 //在复合查询(bool)下新增一个should查询
 $boolQuery->addShould($term);
 
-$resultSet = $type->search($boolQuery);
+// 重要的方法，可以放置其它查询字段，如bool查询
+$query->setQuery($boolQuery);
+
+// 分页
+/*$query->setFrom(1);
+$query->setSize(2);*/
+
+// 排序，注意，排序必须传入原生的es搜索数组，没有sort对象
+// setSort，如果有多个sortSort方法，则后面设置的排序字段与规则会覆盖之前的
+$query->setSort([
+    // 先按date字段升序，再按user_id字段降序
+    "date" => ["order" => "asc"],
+    "user_id" => ["order" => "desc"]
+]);
+
+// 上述setSort等价于如下代码
+// addSort，与setSort的不同之处在于，addSort会新增排序字段与规则，而不是覆盖掉之前的排序字段与规则
+$query->addSort([
+    "date" => ["order" => "asc"]
+]);
+$query->addSort([
+    "user_id" => ["order" => "desc"]
+]);
+
+$resultSet = $type->search($query);
 $results = $resultSet->getResults();
 echo '命中数为：' . $resultSet->getTotalHits();
 foreach ($results as $result) {
@@ -244,7 +271,7 @@ foreach ($results as $result) {
 }
 
 
-//当然，复合查询条件也可以通过原生的数组形式，上述查询等价如下：
+//当然，复合查询条件也可以通过原生的数组形式：
 //注意，这里的示例中must查询下有两个简单查询，注意其写法
 /*$params = [
     "query" => [

@@ -76,4 +76,17 @@ class ExtController extends My_Controller {
         echo '局部配置文件config/development/univ/myconfig.php中的univ_name_dev项为： ' . $name_dev . '<br>';
     }
 
+    /**
+     * CI返回json数据
+     * 注意，因为在MyHook.php文件中有echo输出，实验观察结果时注意先屏蔽一下
+     */
+    public function json_return() {
+        $this->output->set_content_type('application/json');
+        $arr = ['name' => 'univ', 'age' => 24];
+        // 输出
+        $this->output->set_output(json_encode($arr));
+
+        // 或者直接echo json_encode($arr)
+    }
+
 }

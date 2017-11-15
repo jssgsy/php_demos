@@ -80,9 +80,10 @@ class DBController extends CI_Controller {
          * update方法成功则返回true，失败则返回false;
          * update_batch返回更新的记录数，调用affected_rows可能不准确
          */
-        $update_data = ['name' => 'eee'];
-        //第三个参数是where字句
-        $this->db->update($this->table_name, $update_data, 'id = 20');
+        $update_data = ['name' => 'xxx'];
+        //第三个参数是where字句，注意，不一定要是id，可以是任何where条件，如name="aaa",如果有多个条件，则可以利用数组形式,更强大的形式可以使用where方法
+        $this->db->update($this->table_name, $update_data, ['id > ' => 27]);
+        die;
         //真正要更新的数据其实是stu_id，这里的id是where字句的key，表示修改此id的记录中stu_id的值
         $batch_update_data = [
             ['id' => 10, 'stu_id' => 100010, 'name' => 'rrr'],
@@ -108,7 +109,7 @@ class DBController extends CI_Controller {
         echo '批量更新的记录数为：' . $affected_rows . '<br>';
 
         /**
-         * delete方法第二个参数是where字句
+         * delete方法第二个参数是where字句,，注意，不一定要是id，可以是任何where条件，如name="aaa"，参见如上的update注释
          */
         $this->db->delete($this->table_name, 'id=30');
 

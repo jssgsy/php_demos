@@ -34,7 +34,7 @@ class DBController extends CI_Controller {
     public function index() {
         /**
          * 1. 普通查询
-         * query等方法位于CI_DB_driver，此时CI_DB继承自CI_DB_driver
+         * query等方法位于CI_DB_driver，此时CI_DB继承自CI_DB_driver,查看DB.php文件的182行与190行
          */
         /*$this->get_all();
         $this->get_by_id(1);

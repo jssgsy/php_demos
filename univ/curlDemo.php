@@ -20,13 +20,16 @@
 $ch = curl_init();
 
 //2. 设置cURL的各种选项（属性）如请求的url等
-curl_setopt($ch, CURLOPT_URL, 'http://www.baidu.com');
+curl_setopt($ch, CURLOPT_URL, 'http://localhost:8080/php_demos/index.php/univ/formcontroller/form_test');
 
 //设置为TRUE会将curl_exec()获取的信息以字符串返回，而不是直接输出。
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 //设置为TRUE会将头文件的信息作为数据流输出。
-curl_setopt($ch,CURLOPT_HEADER, 1);
+//curl_setopt($ch,CURLOPT_HEADER, 1);
+curl_setopt($ch, CURLOPT_POST,1);
+$curlPost = 'text_name=univ';
+curl_setopt($ch, CURLOPT_POSTFIELDS, $curlPost);
 
 //3. 执行cURL会话
 $data = curl_exec($ch);

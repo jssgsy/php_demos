@@ -8,6 +8,7 @@
 
 # CI基础知识
 CI的入口是index.php，因此通常的url请求的形式为*example.com/index.php/xxx*，进入到index.php，则CI便被启动了。
+如：http://localhost:8080/php_demos/index.php/univ/FormController/form_test
 
 # CI与composer集成
 * config/config.php配置文件中提供了composer_autoload用来使用composer的自动加载功能；

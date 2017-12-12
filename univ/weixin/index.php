@@ -63,8 +63,29 @@ TAG;
         $content = $postObj->Content;
         echo sprintf(self::$MESSAGE_TYPE_TEXT_TEMPLATE, $fromUsername, $toUsername, time(), self::$MESSAGE_TYPE_TEXT, $content);
     }
+
+    /**
+     * 订阅公众号事件
+     * 核心思维：用户订阅公众号时，回复用户的也是一种消息类型，如下面的文本类型，所以，并不是和文本消息一样有响应格式的要求
+     */
+    public function subscribe() {
+        $postStr = file_get_contents("php://input");
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $fromUsername = $postObj->FromUserName;
+        $toUsername = $postObj->ToUserName;
+        $event = $postObj->Event;
+        $str = 'unknow message';
+        if ('subscribe' == $event) {
+            $str = '欢迎订阅此公众号，孔繁歧';
+        }
+        echo sprintf(self::$MESSAGE_TYPE_TEXT_TEMPLATE, $fromUsername, $toUsername, time(), self::$MESSAGE_TYPE_TEXT, $str);
+    }
 }
 
+/**
+ * 运行时注释其它
+ */
 $weixinIndex = new WeixinIndex();
 //$weixinIndex->validUrl($nonce, $timestamp, $echostr, $signature);
-$weixinIndex->responseText();
+//$weixinIndex->responseText();
+$weixinIndex->subscribe();

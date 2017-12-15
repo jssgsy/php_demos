@@ -84,7 +84,7 @@ TAG;
         $event = $postObj->Event;
         $str = 'unknow message';
         if ('subscribe' == $event) {
-            $str = '欢迎订阅此公众号，孔繁歧';
+            $str = '欢迎订阅此公众号，学姐好';
         }
         echo sprintf(self::$MESSAGE_TYPE_TEXT_TEMPLATE, $fromUsername, $toUsername, time(), self::$MESSAGE_TYPE_TEXT, $str);
     }
@@ -100,8 +100,13 @@ TAG;
         // 不直接输出，而是以字符串的形式返回
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $data = curl_exec($ch);
-        // 为便于测试，直接将 accessToken 返回
-        $this->responseText($data);
+        curl_close($ch);
+        if (!empty($data)) {
+            $data = json_decode($data);
+            return $data->access_token;
+        } else {
+            return '获取access_token失败';
+        }
     }
 }
 
@@ -112,4 +117,7 @@ $weixinIndex = new WeixinIndex();
 //$weixinIndex->validUrl($nonce, $timestamp, $echostr, $signature);
 //$weixinIndex->responseText();
 //$weixinIndex->subscribe();
-$weixinIndex->getAccessToken();
+
+// 下面两句是一体的
+$access_token = $weixinIndex->getAccessToken();
+$weixinIndex->responseText($access_token);

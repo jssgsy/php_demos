@@ -9,6 +9,10 @@
 class WeixinIndex {
 
     public static $TOKEN = 'univ';  // 微信公众平台后台上自己填的token，两者需要保持一致
+    // 测试号
+    public static $APP_ID = 'wx48038a68dbdb007e';
+    public static $APP_SECRET = '9a37010142cb479e99360b2fef0c239f';
+    public static $ACCESS_TOKEN_URL_PREFIX = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential';
 
     public static $MESSAGE_TYPE_TEXT = 'text';  // 文本消息
 
@@ -52,8 +56,9 @@ TAG;
     /**
      * 响应文本消息，用户发什么，就回复什么
      * 注意，﻿a给b发送消息，a是FromUserName,b是ToUserName，反过来，b给a回复消息，b是FromUserName，a是ToUserName
+     * @param string $text  要回复的文本内容，默认回复用户发的内容
      */
-    public function responseText() {
+    public function responseText($text = '') {
         // 不要使用下面的语句，因为默认是禁用register_globals
         // $postStr = $GLOBALS['HTTP_RAW_POST_DATA'];
         $postStr = file_get_contents("php://input");
@@ -61,6 +66,9 @@ TAG;
         $fromUsername = $postObj->FromUserName;
         $toUsername = $postObj->ToUserName;
         $content = $postObj->Content;
+
+        // 下面这句是为了便于此方法被其它方法调用
+        $content = empty($text) ? $content : $text;
         echo sprintf(self::$MESSAGE_TYPE_TEXT_TEMPLATE, $fromUsername, $toUsername, time(), self::$MESSAGE_TYPE_TEXT, $content);
     }
 
@@ -80,6 +88,21 @@ TAG;
         }
         echo sprintf(self::$MESSAGE_TYPE_TEXT_TEMPLATE, $fromUsername, $toUsername, time(), self::$MESSAGE_TYPE_TEXT, $str);
     }
+
+    /**
+     * 获取 accessToken，注意，accessToken 有效期为7200秒
+     * 利用 curl，所以需要先使 curl 支持 https 协议
+     */
+    public function getAccessToken() {
+        $url = self::$ACCESS_TOKEN_URL_PREFIX . '&appid=' . self::$APP_ID . '&secret=' . self::$APP_SECRET;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        // 不直接输出，而是以字符串的形式返回
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+        // 为便于测试，直接将 accessToken 返回
+        $this->responseText($data);
+    }
 }
 
 /**
@@ -88,4 +111,5 @@ TAG;
 $weixinIndex = new WeixinIndex();
 //$weixinIndex->validUrl($nonce, $timestamp, $echostr, $signature);
 //$weixinIndex->responseText();
-$weixinIndex->subscribe();
+//$weixinIndex->subscribe();
+$weixinIndex->getAccessToken();

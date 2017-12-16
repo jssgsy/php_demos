@@ -181,6 +181,29 @@ EOT;
         return $data;
     }
 
+    /**
+     * 接收菜单点击事件，这里以click事件为例(点击view事件时会自动跳转到相应的url处)
+     * 注意，不同的事件，微信服务器发送过来的 xml 数据格式不完全一致，需要参考微信官网，但可以根据event进行判断
+     * 菜单项在createMenu方法中定义
+     */
+    public function responseMenuEvent() {
+        $postStr = file_get_contents("php://input");
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $event = $postObj->Event;
+        $eventKey = $postObj->EventKey;
+        if ($event == 'CLICK') {
+            if ($eventKey == 'V1001_TODAY_MUSIC') {
+                return '你点击了今日歌曲';
+            } elseif ($eventKey == 'V1001_GOOD') {
+                return '欢迎赞一下';
+            } else {
+                return 'it is impossible';
+            }
+        } else {
+            return '点击的不是click菜单';
+        }
+    }
+
 }
 
 /**
@@ -202,5 +225,10 @@ $weixinIndex->responseText($access_token);*/
 var_dump($menus);*/
 
 // 下面两句是一体的
-$deleteResult = $weixinIndex->deleteMenu();
-var_dump($deleteResult);
+/*$deleteResult = $weixinIndex->deleteMenu();
+var_dump($deleteResult);*/
+
+// 下面两句是一体的
+$result = $weixinIndex->responseMenuEvent();
+$weixinIndex->responseText($result);
+

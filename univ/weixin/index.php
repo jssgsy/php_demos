@@ -167,6 +167,20 @@ EOT;
         return $menus;
     }
 
+    /**
+     * 删除自定义的菜单
+     */
+    public function deleteMenu() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt(CURLOPT_HEADER, 1);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
+
 }
 
 /**
@@ -184,5 +198,9 @@ $weixinIndex->responseText($access_token);*/
 //$weixinIndex->createMenu();
 
 // 下面两句是一体的
-$menus = $weixinIndex->getMenu();
-var_dump($menus);
+/*$menus = $weixinIndex->getMenu();
+var_dump($menus);*/
+
+// 下面两句是一体的
+$deleteResult = $weixinIndex->deleteMenu();
+var_dump($deleteResult);

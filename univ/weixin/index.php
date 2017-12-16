@@ -204,6 +204,28 @@ EOT;
         }
     }
 
+    /**
+     * 获取微信服务器IP地址
+     * 返回一个json字符串
+     * {
+        "ip_list":[
+            "101.226.62.77",
+            "101.226.62.78",
+            "101.226.62.79",
+            "101.226.62.80"
+         ]
+       }
+     */
+    public function getWeixinServerIp() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
+
 }
 
 /**
@@ -229,6 +251,9 @@ var_dump($menus);*/
 var_dump($deleteResult);*/
 
 // 下面两句是一体的
-$result = $weixinIndex->responseMenuEvent();
-$weixinIndex->responseText($result);
+/*$result = $weixinIndex->responseMenuEvent();
+$weixinIndex->responseText($result);*/
+
+$ipList = $weixinIndex->getWeixinServerIp();
+var_dump($ipList);
 

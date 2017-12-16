@@ -108,6 +108,65 @@ TAG;
             return '获取access_token失败';
         }
     }
+
+    /**
+     * 自定义菜单，注意，菜单还有所谓的人性化菜单
+     * 随便学习如何在php中使用curl发送post请求
+     * 注意，现在有小程序的类型，在绑定小程序的 appid 之前不要在这里出现
+     */
+    public function createMenu() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        // 控制返回的数据中是否包含头信息
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        // 设置为post请求
+        curl_setopt($ch, CURLOPT_POST, 1);
+        $post_fields = <<<EOT
+{
+     "button":[
+     {    
+          "type":"click",
+          "name":"今日歌曲",
+          "key":"V1001_TODAY_MUSIC"
+      },
+      {
+           "name":"菜单",
+           "sub_button":[
+           {    
+               "type":"view",
+               "name":"搜索",
+               "url":"http://www.soso.com/"
+            },
+            {
+               "type":"click",
+               "name":"赞一下我们",
+               "key":"V1001_GOOD"
+            }]
+       }]
+ }
+EOT;
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        var_dump($result);
+    }
+
+    /**
+     * 查询自定义的菜单
+     * 在设置了个性化菜单后，使用本自定义菜单查询接口可以获取默认菜单和全部个性化菜单信息。
+     */
+    public function getMenu() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/menu/get?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $menus = curl_exec($ch);
+        curl_close($ch);
+        return $menus;
+    }
+
 }
 
 /**
@@ -119,5 +178,11 @@ $weixinIndex = new WeixinIndex();
 //$weixinIndex->subscribe();
 
 // 下面两句是一体的
-$access_token = $weixinIndex->getAccessToken();
-$weixinIndex->responseText($access_token);
+/*$access_token = $weixinIndex->getAccessToken();
+$weixinIndex->responseText($access_token);*/
+
+//$weixinIndex->createMenu();
+
+// 下面两句是一体的
+$menus = $weixinIndex->getMenu();
+var_dump($menus);

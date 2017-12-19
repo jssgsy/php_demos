@@ -285,6 +285,24 @@ EOT;
         }
     }
 
+    /**
+     * 获取公众号的自动回复规则
+     * 如关注后自动回复是否开启、消息自动回复是否开启、关注后自动回复的信息等等
+     */
+    public function getAutoReplyRule() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/get_current_autoreply_info?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        // 返回的是json格式的字符串
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取失败';
+        } else {
+            return $data;
+        }
+        curl_close($ch);
+    }
 }
 
 /**
@@ -321,5 +339,7 @@ var_dump($ipList);*/
 /*$menuConf = $weixinIndex->getMenuConf();
 var_dump($menuConf);*/
 
-$weixinIndex->responseMessage();
+//$weixinIndex->responseMessage();
 
+$data = $weixinIndex->getAutoReplyRule();
+var_dump($data);

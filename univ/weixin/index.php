@@ -14,7 +14,14 @@ class WeixinIndex {
     public static $APP_SECRET = '9a37010142cb479e99360b2fef0c239f';
     public static $ACCESS_TOKEN_URL_PREFIX = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential';
 
+    // 以下为微信提供的7种消息类型
     public static $MESSAGE_TYPE_TEXT = 'text';  // 文本消息
+    public static $MESSAGE_TYPE_IMAGE = 'image'; // 图片消息
+    public static $MESSAGE_TYPE_VOICE = 'voice'; // 语音消息
+    public static $MESSAGE_TYPE_VIDEO = 'video'; // 视频消息
+    public static $MESSAGE_TYPE_SHORTVIDEO = 'shortvideo'; // 小视频消息
+    public static $MESSAGE_TYPE_LOCATION = 'location'; // 地理位置消息
+    public static $MESSAGE_TYPE_LINK = 'link'; // 链接消息
 
     // 微信服务器要求的文本消息的响应格式
     public static $MESSAGE_TYPE_TEXT_TEMPLATE = /** @lang text */
@@ -29,7 +36,7 @@ class WeixinIndex {
 TAG;
 
     /**
-     * 验证服务器地址的有效性
+     * 验证服务器地址的有效性，只需首次验证一次
      */
     public function validUrl() {
         //﻿获得微信服务器传过来的参数 signature nonce token timestamp echostr
@@ -242,6 +249,42 @@ EOT;
         return $data;
     }
 
+    /**
+     * 根据不同类型回复相应的消息
+     * 微信提供的消息总共有7种类型
+     * 注意，此方法内部调用了responseText方法，而responseText方法内部又使用了php://input去获取微信服务器传过来的信息，经验证这是可行的
+     */
+    public function responseMessage() {
+        $postStr = file_get_contents('php://input');
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $messageType = $postObj->MsgType;
+        switch ($messageType) {
+            case self::$MESSAGE_TYPE_TEXT:
+                $this->responseText('你发送的是文本消息');
+                break;
+            case self::$MESSAGE_TYPE_IMAGE:
+                $this->responseText('你发送的是图片消息');
+                break;
+            case self::$MESSAGE_TYPE_VOICE:
+                $this->responseText('你发送的是语音消息');
+                break;
+            case self::$MESSAGE_TYPE_VIDEO:
+                $this->responseText('你发送的是视频消息');
+                break;
+            case self::$MESSAGE_TYPE_SHORTVIDEO:
+                $this->responseText('你发送的是小视频消息');
+                break;
+            case self::$MESSAGE_TYPE_LOCATION:
+                $this->responseText('你发送的是地理位置消息');
+                break;
+            case self::$MESSAGE_TYPE_LINK:
+                $this->responseText('你发送的是链接消息');
+                break;
+            default:
+                $this->responseText('厉害了，这个消息类型我不能识别');
+        }
+    }
+
 }
 
 /**
@@ -274,6 +317,9 @@ $weixinIndex->responseText($result);*/
 /*$ipList = $weixinIndex->getWeixinServerIp();
 var_dump($ipList);*/
 
-$menuConf = $weixinIndex->getMenuConf();
-var_dump($menuConf);
+// 下面两句是一体的
+/*$menuConf = $weixinIndex->getMenuConf();
+var_dump($menuConf);*/
+
+$weixinIndex->responseMessage();
 

@@ -226,6 +226,22 @@ EOT;
         return $data;
     }
 
+    /**
+     * 获取自定义菜单配置接口,与getMenu()方法类似，但返回的数据更多
+     */
+    public function getMenuConf() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if (empty($data)) {
+            return '未获取到自定义菜单配置';
+        }
+        return $data;
+    }
+
 }
 
 /**
@@ -254,6 +270,10 @@ var_dump($deleteResult);*/
 /*$result = $weixinIndex->responseMenuEvent();
 $weixinIndex->responseText($result);*/
 
-$ipList = $weixinIndex->getWeixinServerIp();
-var_dump($ipList);
+// 下面两句是一体的
+/*$ipList = $weixinIndex->getWeixinServerIp();
+var_dump($ipList);*/
+
+$menuConf = $weixinIndex->getMenuConf();
+var_dump($menuConf);
 

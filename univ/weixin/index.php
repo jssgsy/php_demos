@@ -356,6 +356,24 @@ EOT;
             return $data;
         }
     }
+
+    /**
+     * 获取临时素材
+     * 注意，视频文件不支持https下载，调用该接口需http协议,当然其它类型是可以使用http协议的，如这里的图片
+     */
+    public function getTempMaterial() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/media/get?access_token=' . $this->getAccessToken() . '&media_id=C3jRK5ptZ9MGPTInTdUq1Mn19JFPA7fGsAwsQerylt4n6a0KA2IAzViVZorWeevM';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if (empty($data)) {
+            return 'o o, 获取临时素材失败了';
+        } else {
+            return $data;
+        }
+    }
 }
 
 /**
@@ -402,4 +420,7 @@ var_dump($data);*/
 /*$data = $weixinIndex->uploadTempMaterial();
 var_dump($data);*/
 
-$weixinIndex->sendImageToUser();
+//$weixinIndex->sendImageToUser();
+
+$data = $weixinIndex->getTempMaterial();
+var_dump($data);

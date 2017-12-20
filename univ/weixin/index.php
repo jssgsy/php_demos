@@ -339,7 +339,7 @@ EOT;
         // php7中(好像是php5.6以后)curl已经不支持@加媒体文件的写法
         // $postField = array('media' => '@' . realpath("hello.png"));  ;
 
-        // 注意下面CURLFile类的使用,media是微信接口的入参要求
+        // 注意下面CURLFile类的使用,media是微信接口的入参要求，需要同目录下有hello.png文件存在
         $postField = array('media' => new CURLFile(realpath("hello.png")));  ;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -370,6 +370,36 @@ EOT;
         curl_close($ch);
         if (empty($data)) {
             return 'o o, 获取临时素材失败了';
+        } else {
+            return $data;
+        }
+    }
+
+    /**
+     * 上传(新增)永久素材，这里以图片为例。与上面的上传临时素材唯一的差别是url的不同
+     * 永久素材分为：
+     *  图文；
+     *  其它(如图片，视频等);
+     */
+    public function uploadPermanentMaterial() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/add_material?access_token='. $this->getAccessToken() . '&type=image';
+        // php7中(好像是php5.6以后)curl已经不支持@加媒体文件的写法
+        // $postField = array('media' => '@' . realpath("hello.png"));  ;
+
+        // 注意下面CURLFile类的使用,media是微信接口的入参要求，需要同目录下有hello.png文件存在
+        $postField = array('media' => new CURLFile(realpath("hello.png")));  ;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+        // 返回的是json格式的字符串
+        // {"media_id":"eNVpPb0KQciogNvj0nyA8HXNWo1K55yJeoNX00OCc6M","url":"http:\/\/mmbiz.qpic.cn\/mmbiz_png\/lwz6EUkeG8x3jfZlEibFCzfymOEMZmH1l9wfdEK5Ot2aTQkDqibKeiafl0iaMtbpdKXahN0ll03sEUWicn5PFNcrIdg\/0?wx_fmt=png"}
+        // 其中的url为新增的图片素材的图片URL（仅新增图片素材时会返回该字段）
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if (empty($data)) {
+            return 'o o, 上传失败了';
         } else {
             return $data;
         }
@@ -422,5 +452,9 @@ var_dump($data);*/
 
 //$weixinIndex->sendImageToUser();
 
-$data = $weixinIndex->getTempMaterial();
+// 下面两句是一体的
+/*$data = $weixinIndex->getTempMaterial();
+var_dump($data);*/
+
+$data = $weixinIndex->uploadPermanentMaterial();
 var_dump($data);

@@ -407,7 +407,10 @@ EOT;
 
     /**
      * 获取素材列表
-     * 注意，请求方式为post
+     * 注意
+     *  1. 请求方式为post；
+     *  2. 包含公众号在公众平台官网素材管理模块中新建的图文消息、语音、视频等素材；
+     *  3. 临时素材无法通过本接口获取；
      */
     public function getMaterialList() {
         $url = 'https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=' . $this->getAccessToken();
@@ -461,9 +464,11 @@ EOT;
     }
 
     /**
-     * 获取永久素材,这里以图片为例
-     * 注意，这里需要为post请求
-     * 可通过上面的"获取素材列表(getMaterialList)"获知素材的media_id。
+     * 获取永久素材
+     * 注意:
+     *  1. 这里需要为post请求;
+     *  2. 可通过上面的"获取素材列表(getMaterialList)"获知素材的media_id;
+     *  3. 图文素材与视频消息素材返回的是一个json字符串，其它类型的素材返回的直接为素材的内容，开发者可以自行保存为文件
      */
     public function getPermanentMaterial() {
         $url = 'https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=' . $this->getAccessToken();

@@ -517,6 +517,34 @@ EOT;
         }
     }
 
+    /**
+     * 删除永久素材
+     * 注意：
+     *  1、请谨慎操作本接口，因为它可以删除公众号在公众平台官网素材管理模块中新建的图文消息、语音、视频等素材（但需要先通过获取素材列表来获知素材的media_id）；
+     *  2、临时素材无法通过本接口删除；
+     */
+    public function deletePermanentMaterial() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=' . $this->getAccessToken();
+        $postField = [
+            'media_id' => 'eNVpPb0KQciogNvj0nyA8BYUnUnXcs52L7j6_0ICjYA'
+        ];
+        $postField = json_encode($postField);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+        /*
+         {"errcode":0,"errmsg":"ok"}
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 删除永久素材失败了';
+        } else {
+            return $data;
+        }
+    }
+
 }
 
 /**
@@ -581,5 +609,9 @@ var_dump($data);*/
 /*$data = $weixinIndex->getPermanentMaterial();
 var_dump($data);*/
 
+// 下面两句是一体的
 $data = $weixinIndex->getMaterialCount();
+var_dump($data);
+
+$data = $weixinIndex->deletePermanentMaterial();
 var_dump($data);

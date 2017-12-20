@@ -35,6 +35,18 @@ class WeixinIndex {
         </xml>
 TAG;
 
+    // 微信服务器要求的图片消息的响应格式
+    public static $MESSAGE_TYPE_IMAGE_TEMPLATE = /** @lang text */
+        <<<TAG
+        <xml>
+        <ToUserName><![CDATA[%s]]></ToUserName>
+        <FromUserName><![CDATA[%s]]></FromUserName>
+        <CreateTime>%s</CreateTime>
+        <MsgType><![CDATA[%s]]></MsgType>
+        <Image><MediaId><![CDATA[%s]]></MediaId></Image>
+        </xml>
+TAG;
+
     /**
      * 验证服务器地址的有效性，只需首次验证一次
      */
@@ -77,6 +89,18 @@ TAG;
         // 下面这句是为了便于此方法被其它方法调用
         $content = empty($text) ? $content : $text;
         echo sprintf(self::$MESSAGE_TYPE_TEXT_TEMPLATE, $fromUsername, $toUsername, time(), self::$MESSAGE_TYPE_TEXT, $content);
+    }
+
+    /**
+     * 回复图片给用户
+     * 注意，这里需要MediaId,这里采用的是临时素材，所以三天后会失效
+     */
+    public function sendImageToUser() {
+        $postStr = file_get_contents("php://input");
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $fromUsername = $postObj->FromUserName;
+        $toUsername = $postObj->ToUserName;
+        echo sprintf(self::$MESSAGE_TYPE_IMAGE_TEMPLATE, $fromUsername, $toUsername, time(), 'image', 'C3jRK5ptZ9MGPTInTdUq1Mn19JFPA7fGsAwsQerylt4n6a0KA2IAzViVZorWeevM');
     }
 
     /**
@@ -374,5 +398,8 @@ var_dump($menuConf);*/
 /*$data = $weixinIndex->getAutoReplyRule();
 var_dump($data);*/
 
-$data = $weixinIndex->uploadTempMaterial();
-var_dump($data);
+// 下面两句是一体的
+/*$data = $weixinIndex->uploadTempMaterial();
+var_dump($data);*/
+
+$weixinIndex->sendImageToUser();

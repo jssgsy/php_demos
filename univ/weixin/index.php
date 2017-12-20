@@ -404,6 +404,62 @@ EOT;
             return $data;
         }
     }
+
+    /**
+     * 获取素材列表
+     * 注意，请求方式为post
+     */
+    public function getMaterialList() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=' . $this->getAccessToken();
+        // 三个字段是微信接口的要求
+        /**
+         * type:素材的类型，图片（image）、视频（video）、语音 （voice）、图文（news）;
+         * offset:从全部素材的该偏移位置开始返回，0表示从第一个素材 返回;
+         * count:返回素材的数量，取值在1到20之间
+         */
+        $postField = [
+            'type' => 'image',
+            'offset' => 0,
+            'count' => 2
+        ];
+        /*
+         * 特别注意，微信许多接口如果是post请求，则参数一般要求是json格式的字符串！
+         */
+        $postField = json_encode($postField);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+        /*
+        {
+            "item":[
+                {
+                    "media_id":"eNVpPb0KQciogNvj0nyA8BYUnUnXcs52L7j6_0ICjYA",
+                    "name":"/usr/local/nginx-1.13.6/html/php_demos/univ/weixin/hello.png",
+                    "update_time":1513737843,
+                    "url":"http://mmbiz.qpic.cn/mmbiz_png/lwz6EUkeG8x3jfZlEibFCzfymOEMZmH1l9wfdEK5Ot2aTQkDqibKeiafl0iaMtbpdKXahN0ll03sEUWicn5PFNcrIdg/0?wx_fmt=png"
+                },
+                {
+                    "media_id":"eNVpPb0KQciogNvj0nyA8MpmAv3RCh9slS2y20udljE",
+                    "name":"/usr/local/nginx-1.13.6/html/php_demos/univ/weixin/hello.png",
+                    "update_time":1513737837,
+                    "url":"http://mmbiz.qpic.cn/mmbiz_png/lwz6EUkeG8x3jfZlEibFCzfymOEMZmH1l9wfdEK5Ot2aTQkDqibKeiafl0iaMtbpdKXahN0ll03sEUWicn5PFNcrIdg/0?wx_fmt=png"
+                }
+            ],
+            "total_count":3,
+            "item_count":2
+        }
+         */
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if (empty($data)) {
+            return 'o o, 获取素材列表失败了';
+        } else {
+            return $data;
+        }
+    }
+
 }
 
 /**
@@ -456,5 +512,9 @@ var_dump($data);*/
 /*$data = $weixinIndex->getTempMaterial();
 var_dump($data);*/
 
-$data = $weixinIndex->uploadPermanentMaterial();
+// 下面两句是一体的
+/*$data = $weixinIndex->uploadPermanentMaterial();
+var_dump($data);*/
+
+$data = $weixinIndex->getMaterialList();
 var_dump($data);

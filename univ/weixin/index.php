@@ -460,6 +460,33 @@ EOT;
         }
     }
 
+    /**
+     * 获取永久素材,这里以图片为例
+     * 注意，这里需要为post请求
+     * 可通过上面的"获取素材列表(getMaterialList)"获知素材的media_id。
+     */
+    public function getPermanentMaterial() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=' . $this->getAccessToken();
+        // 特别注意，微信许多接口如果是post请求，则参数一般要求是json格式的字符串！
+        $postField = [
+            'media_id' => 'eNVpPb0KQciogNvj0nyA8BYUnUnXcs52L7j6_0ICjYA'
+        ];
+        $postField = json_encode($postField);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if (empty($data)) {
+            return 'o o, 获取永久素材失败了';
+        } else {
+            return $data;
+        }
+    }
+
 }
 
 /**
@@ -516,5 +543,9 @@ var_dump($data);*/
 /*$data = $weixinIndex->uploadPermanentMaterial();
 var_dump($data);*/
 
-$data = $weixinIndex->getMaterialList();
+// 下面两句是一体的
+/*$data = $weixinIndex->getMaterialList();
+var_dump($data);*/
+
+$data = $weixinIndex->getPermanentMaterial();
 var_dump($data);

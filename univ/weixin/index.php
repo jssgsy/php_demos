@@ -303,6 +303,35 @@ EOT;
         }
         curl_close($ch);
     }
+
+    /**
+     * 上传(新增)临时素材
+     * 注意：
+     *  1. (至少在php7中)curl中已经不支持使用@后接媒体文件的写法，可以使用CURLFile代替；
+     *  2. CURLOPT_SAFE_UPLOAD选项也已经废弃；
+     */
+    public function uploadTempMaterial() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/media/upload?access_token='. $this->getAccessToken() . '&type=image';
+        // php7中(好像是php5.6以后)curl已经不支持@加媒体文件的写法
+        // $postField = array('media' => '@' . realpath("hello.png"));  ;
+
+        // 注意下面CURLFile类的使用,media是微信接口的入参要求
+        $postField = array('media' => new CURLFile(realpath("hello.png")));  ;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+        // 返回的是json格式的字符串
+        // {"type":"image","media_id":"C3jRK5ptZ9MGPTInTdUq1Mn19JFPA7fGsAwsQerylt4n6a0KA2IAzViVZorWeevM","created_at":1513732526}
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if (empty($data)) {
+            return 'o o, 上传失败了';
+        } else {
+            return $data;
+        }
+    }
 }
 
 /**
@@ -341,5 +370,9 @@ var_dump($menuConf);*/
 
 //$weixinIndex->responseMessage();
 
-$data = $weixinIndex->getAutoReplyRule();
+// 下面两句是一体的
+/*$data = $weixinIndex->getAutoReplyRule();
+var_dump($data);*/
+
+$data = $weixinIndex->uploadTempMaterial();
 var_dump($data);

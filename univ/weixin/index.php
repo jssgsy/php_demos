@@ -492,6 +492,31 @@ EOT;
         }
     }
 
+    /**
+     * 获取素材总数,只包含永久素材，临时素材不计算在内
+     * 永久素材的总数，也会计算公众平台官网素材管理中的素材
+     */
+    public function getMaterialCount() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        /*
+         {
+            "voice_count":0,
+            "video_count":0,
+            "image_count":3,
+            "news_count":0
+         }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取素材总数失败了';
+        } else {
+            return $data;
+        }
+    }
+
 }
 
 /**
@@ -552,5 +577,9 @@ var_dump($data);*/
 /*$data = $weixinIndex->getMaterialList();
 var_dump($data);*/
 
-$data = $weixinIndex->getPermanentMaterial();
+// 下面两句是一体的
+/*$data = $weixinIndex->getPermanentMaterial();
+var_dump($data);*/
+
+$data = $weixinIndex->getMaterialCount();
 var_dump($data);

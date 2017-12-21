@@ -80,7 +80,7 @@ class CurlSendDemo {
          *          1. 用file_get_contents('php://input')可以获取到整个请求字符串；
          *          2. 用$_POST可以获取到单个请求参数；
          * 2. 以数组的形式，此时Content-Type会被设置成的multipart/form-data；
-         *      此时服务器端可以只能用$_POST方式获取到请求参数
+         *      此时服务器端只能用$_POST方式获取到请求参数
          * 小结：由此可知，服务器端用$_POST来获取post请求参数最保险
          */
         $postFields='name=abc&age=34';
@@ -99,10 +99,37 @@ class CurlSendDemo {
     }
 
     /**
-     * 上传图片
+     * 上传文件，这里以图片为例
+     * php5.6(至少php7)以后，php中的curl已经不支持@后接媒体文件的方式，需要使用CurlFile上传图片
      */
     public function sendPostMethodWithImage() {
-
+        $ch = curl_init();
+        $filePath = realpath('hello.png');
+        // upload名称是自定义的
+        $postField = [
+            'upload' => new CURLFile($filePath)
+        ];
+        curl_setopt($ch, CURLOPT_URL, self::$URL);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+        /*
+         * 下面是返回的$_FILES
+         * application/octet-stream：只能提交二进制，而且只能提交一个二进制，如果提交文件的话，只能提交一个文件,后台接收参数只能有一个
+         * tmp_name：服务器端可使用$_FILES['upload']['tmp_name']引入上传的文件，且利用move_uploaded_file方法将文件保存到另一个地方
+         {
+            "upload":{
+                "name":"hello.png",
+                "type":"application/octet-stream",
+                "tmp_name":"/tmp/phpY5m0rc",
+                "error":0,
+                "size":564088
+            }
+         }
+         */
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
     }
 
 }
@@ -117,5 +144,9 @@ var_dump($result);*/
 /*$result = $curlSendDemo->sendGetMethodWithParam();
 var_dump($result);*/
 
-$result = $curlSendDemo->sendPostMethod();
-var_dump($result);
+// 下面两句是一体的
+/*$result = $curlSendDemo->sendPostMethod();
+var_dump($result);*/
+
+$data = $curlSendDemo->sendPostMethodWithImage();
+var_dump($data);

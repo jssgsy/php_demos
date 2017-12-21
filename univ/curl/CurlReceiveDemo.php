@@ -47,9 +47,30 @@ class CurlReceiveDemo {
 
     /**
      * 响应图片上上传
+     * 注意这里保存文件的方法:move_uploaded_file
+     * 假设发送方表示文件的key为upload，此时$_FILES的内容如下：
+        {
+            "upload":{
+                "name":"hello.png",
+                "type":"application/octet-stream",
+                "tmp_name":"/tmp/phpY5m0rc",
+                "error":0,
+                "size":564088
+            }
+        }
      */
     public function postMethodWithImageTest() {
-
+        if (empty($_FILES)) {
+            echo 'o o, 上传文件失败了，$_FILES为空';
+        } else {
+            // 将上传的文件保存到另一个位置,确保hello2.png文件有写入权限
+            $save_result = move_uploaded_file($_FILES['upload']['tmp_name'], __DIR__ . DIRECTORY_SEPARATOR . 'hello2.png');
+            if (empty($save_result)) {
+                echo  'o o, 上传文件成功，但保存失败了';
+            } else {
+                echo '上传文件成功，且保存成功，$_FILES的内容为：' . json_encode($_FILES);
+            }
+        }
     }
 }
 
@@ -59,4 +80,6 @@ $curlReceiveDemo =  new CurlReceiveDemo();
 
 //$curlReceiveDemo->getMethodWithParamTest();
 
-$curlReceiveDemo->postMethodTest();
+//$curlReceiveDemo->postMethodTest();
+
+$curlReceiveDemo->postMethodWithImageTest();

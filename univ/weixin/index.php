@@ -896,9 +896,35 @@ EOT;
          */
         $data = curl_exec($ch);
         if (empty($data)) {
-            return 'o o, 获取永久二维码ticket';
+            return 'o o, 获取永久二维码ticket失败';
         } else {
             return $data;
+        }
+        curl_close($ch);
+    }
+
+    /**
+     * 生成带参数的二维码
+     * 分成两步：
+     *  1. 获取ticket,ticket可由上面的getTempQrcodeTicket或者getPermanentQrcodeTicket取得；
+     *  2. 获取带参数的二维码；
+     * 有了ticket之后，可以直接在浏览器中输入https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET以获取二维码；
+     * 扫码时，如果用户还未关注公众号，会提示用户关注公众号，如果用户已经关注公众号，在用户扫描后会自动进入会话
+     * 下面演示将微信服务器返回的二维码进行保存
+     */
+    public function getSceneQrcode() {
+        $url = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEj8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyV3pPdlJCcDFmN2oxMDAwME0wM1MAAgT6sTtaAwQAAAAA';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        // ticket正确情况下，http 返回码是200，是一张图片，可以直接展示或者下载
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 生成带参数的二维码失败';
+        } else {
+            // 注意要确保服务器上同目录下的qrcode.png有写入权限
+            file_put_contents('qrcode.png', $data);
+            return 'o o, 生成带参数的二维码成功，保存在了qrcode.png中';
         }
         curl_close($ch);
     }
@@ -1005,5 +1031,9 @@ var_dump($data);*/
 /*$data = $weixinIndex->getTempQrcodeTicket();
 var_dump($data);*/
 
+/*// 下面两句是一体的
 $data = $weixinIndex->getPermanentQrcodeTicket();
+var_dump($data);*/
+
+$data = $weixinIndex->getSceneQrcode();
 var_dump($data);

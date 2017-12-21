@@ -812,6 +812,97 @@ EOT;
         $this->responseText('Latitude:' . $latitude . ' Longitude: ' . $longitude);
     }
 
+    /**
+     * 获取临时二维码ticket
+     *
+     */
+    public function getTempQrcodeTicket() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        /*
+         * 发送给微信服务器的数据
+         * action_name：
+         *  QR_SCENE：临时的整型参数值;
+         *  QR_STR_SCENE: 临时的字符串参数值;
+         *  QR_LIMIT_SCENE: 永久的整型参数值;
+         *  QR_LIMIT_STR_SCENE: 永久的字符串参数值;
+         * scene_id: 场景值ID，临时二维码时为32位非0整型，永久二维码时最大值为100000（目前参数只支持1--100000）
+         */
+        $postFields = [
+            'expire_seconds' => 300,
+            'action_name' => 'QR_SCENE',
+            'action_info' => [
+                'scene' => [
+                    'scene_id' => 123456
+                ]
+            ]
+        ];
+        $postFields = json_encode($postFields);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+
+        /*
+         * url:二维码图片解析后的地址，开发者可根据该地址自行生成需要的二维码图片
+        {
+            "ticket":"gQFE8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyOEV4TFFXcDFmN2oxOWZPWHhxMS0AAgQjsTtaAwQsAQAA",
+            "expire_seconds":300,
+            "url":"http://weixin.qq.com/q/028ExLQWp1f7j19fOXxq1-"
+        }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取临时二维码ticket失败';
+        } else {
+            return $data;
+        }
+        curl_close($ch);
+    }
+
+    /**
+     * 获取永久二维码ticket
+     */
+    public function getPermanentQrcodeTicket() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        /*
+         * 发送给微信服务器的数据
+         * action_name：四个候选值如下：
+         *  QR_SCENE：临时的整型参数值;
+         *  QR_STR_SCENE: 临时的字符串参数值;
+         *  QR_LIMIT_SCENE: 永久的整型参数值;
+         *  QR_LIMIT_STR_SCENE: 永久的字符串参数值;
+         * scene_str: 场景值ID（字符串形式的ID），字符串类型，长度限制为1到64
+         */
+        $postFields = [
+            'action_name' => 'QR_LIMIT_SCENE',
+            'action_info' => [
+                'scene' => [
+                    'scene_str' =>'abcdefg'
+                ]
+            ]
+        ];
+        $postFields = json_encode($postFields);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+        /*
+         {
+            "ticket":"gQEj8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyV3pPdlJCcDFmN2oxMDAwME0wM1MAAgT6sTtaAwQAAAAA",
+            "url":"http://weixin.qq.com/q/02WzOvRBp1f7j10000M03S"
+         }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取永久二维码ticket';
+        } else {
+            return $data;
+        }
+        curl_close($ch);
+    }
+
 }
 
 /**
@@ -908,4 +999,11 @@ var_dump($data);*/
 /*$data = $weixinIndex->batchGetUserBasicInfo();
 var_dump($data);*/
 
-$weixinIndex->getUserLocation();
+//$weixinIndex->getUserLocation();
+
+// 下面两句是一体的
+/*$data = $weixinIndex->getTempQrcodeTicket();
+var_dump($data);*/
+
+$data = $weixinIndex->getPermanentQrcodeTicket();
+var_dump($data);

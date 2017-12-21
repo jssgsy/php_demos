@@ -670,6 +670,51 @@ EOT;
             return $data;
         }
     }
+
+    /**
+     * 获取单个用户基本信息(UnionID机制),需要提供openid，openid可由getUserList方法获取
+     * 这里只涉及openid,不涉及unionid
+     */
+    public function getUserBasicInfo() {
+        // lang:返回国家地区语言版本,非必传
+        $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $this->getAccessToken() . '&openid=oWcHH0ztWUj0GydCCtl5Z8VU9iqY&lang=zh_CN';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        /*
+         * subscribe:用户是否订阅该公众号标识，值为0时，代表此用户没有关注该公众号，拉取不到其余信息;
+         * sex:用户的性别，值为1时是男性，值为2时是女性，值为0时是未知;
+         * unionid:只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段;
+         * remark:公众号运营者对粉丝的备注，公众号运营者可在微信公众平台用户管理界面对粉丝添加备注;
+         * groupid:用户所在的分组ID;
+         * tagid_list:用户被打上的标签ID列表;
+        {
+            "subscribe":1,
+            "openid":"oWcHH0ztWUj0GydCCtl5Z8VU9iqY",
+            "nickname":"UnivWX",
+            "sex":1,
+            "language":"en",
+            "city":"杭州",
+            "province":"浙江",
+            "country":"中国",
+            "headimgurl":"http://wx.qlogo.cn/mmopen/hQicLQFHWQTYRW9cCyQaficibQW9zRUoTXWc3fPjy2qhXU081ulFxFKkTUL5OFcEHciaHPmOvp51NbycG2o5KaUDTPdwJuWWauPQ/0",
+            "subscribe_time":1513408617,
+            "remark":"",
+            "groupid":0,
+            "tagid_list":[
+
+            ]
+        }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取用户基本信息失败';
+        } else {
+            return $data;
+        }
+    }
+
 }
 
 /**
@@ -754,6 +799,10 @@ var_dump($data);*/
 /*$data = $weixinIndex->deleteUserTag();
 var_dump($data);*/
 
-$data = $weixinIndex->getUserList();
+// 下面两句是一体的
+/*$data = $weixinIndex->getUserList();
+var_dump($data);*/
+
+$data = $weixinIndex->getUserBasicInfo();
 var_dump($data);
 

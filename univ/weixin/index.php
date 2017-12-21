@@ -545,6 +545,34 @@ EOT;
         }
     }
 
+    /**
+     * 创建(用户)标签
+     */
+    public function createUserTag() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/tags/create?access_token=' . $this->getAccessToken();
+        $postField = [
+            'tag' => [
+                'name' => 'family'
+            ]
+        ];
+        $postField = json_encode($postField);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+        /*
+         * {"tag":{"id":100,"name":"family"}}
+         * id:标签id，由微信分配;
+         * name:标签名，UTF8编码
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 创建用户标签失败';
+        } else {
+            return $data;
+        }
+    }
 }
 
 /**
@@ -610,8 +638,13 @@ var_dump($data);*/
 var_dump($data);*/
 
 // 下面两句是一体的
-$data = $weixinIndex->getMaterialCount();
+/*$data = $weixinIndex->getMaterialCount();
+var_dump($data);*/
+
+// 下面两句是一体的
+/*$data = $weixinIndex->deletePermanentMaterial();
+var_dump($data);*/
+
+$data = $weixinIndex->createUserTag();
 var_dump($data);
 
-$data = $weixinIndex->deletePermanentMaterial();
-var_dump($data);

@@ -783,6 +783,35 @@ EOT;
         }
     }
 
+    /**
+     * 获取用户地理位置
+     * 开通了上报地理位置接口的公众号，用户在关注后进入公众号会话时，会弹框让用户确认是否允许公众号使用其地理位置。
+     * 注意：弹框只会出现一次。但用户同意上报地理位置后，每次进入公众号会话时，都会在进入时上报地理位置（或者每隔5秒上报一次，取次于公众号的设置），上报地理位置以推送XML数据包到开发者填写的URL来实现。
+     */
+    public function getUserLocation() {
+        /*
+         * 微信服务器传送过来的xml数据格式
+         */
+        $xmlData = /** @lang text */
+        <<<EOT
+<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[fromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[LOCATION]]></Event>
+<Latitude>23.137466</Latitude>
+<Longitude>113.352425</Longitude>
+<Precision>119.385040</Precision>
+</xml>
+EOT;
+        $postStr = file_get_contents('php://input');
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $latitude = $postObj->Latitude;
+        $longitude = $postObj->Longitude;
+        $this->responseText('Latitude:' . $latitude . ' Longitude: ' . $longitude);
+    }
+
 }
 
 /**
@@ -875,6 +904,8 @@ var_dump($data);*/
 /*$data = $weixinIndex->getUserBasicInfo();
 var_dump($data);*/
 
-$data = $weixinIndex->batchGetUserBasicInfo();
-var_dump($data);
+// 下面两句是一体的
+/*$data = $weixinIndex->batchGetUserBasicInfo();
+var_dump($data);*/
 
+$weixinIndex->getUserLocation();

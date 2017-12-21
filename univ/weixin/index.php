@@ -929,6 +929,61 @@ EOT;
         curl_close($ch);
     }
 
+    /**
+     * 响应扫描带参数二维码事件
+     * 用户扫描带场景值二维码时，可能推送以下两种事件：
+        1. 如果用户还未关注公众号，则用户可以关注公众号，关注后微信会将带场景值关注事件推送给开发者。
+        2. 如果用户已经关注公众号，则微信会将带场景值扫描事件推送给开发者。
+     */
+    public function replyScanSceneQrcode() {
+        // 未关注时扫码微信服务器发送过来的xml数据格式
+        /*
+         * EventKey:事件KEY值，qrscene_为前缀，后面为二维码的参数值
+         */
+        $unscribeXmlData = /** @lang text */
+            <<< EOT
+<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[subscribe]]></Event>
+<EventKey><![CDATA[qrscene_123123]]></EventKey>
+<Ticket><![CDATA[TICKET]]></Ticket>
+</xml>
+EOT;
+        // 关注时扫码微信服务器发送过来的xml数据格式
+        /*
+         * EventKey:事件KEY值，是一个32位无符号整数，即创建二维码时的二维码scene_id
+         */
+        $unscribeXmlData = /** @lang text */
+            <<< TAG
+<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime><MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[SCAN]]></Event>
+<EventKey><![CDATA[SCENE_VALUE]]></EventKey>
+<Ticket><![CDATA[TICKET]]></Ticket>
+</xml>
+TAG;
+        $postStr = file_get_contents("php://input");
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $event = $postObj->Event;
+        $eventKey = $postObj->EventKey;
+        $ticket = $postObj->Ticket;
+        if ('subscribe' == $event) {
+            // 在用户扫描二维码并点击关注后，这里的消息会回复给用户
+            $this->responseText('这是扫码二维码关注的。');
+        } elseif ('SCAN' == $event) {
+            // 在已关注用户扫描二维码进入公众号时，这里的消息会回复给用户
+            $this->responseText('hello, 老朋友，你已经关注了。');
+        } else {
+            $this->responseText('o o, 我还不能识别。');
+        }
+        // file_put_contents('log', 'EventKey: ' . $eventKey . ' Ticket: ' . $ticket);
+    }
+
 }
 
 /**
@@ -1031,9 +1086,12 @@ var_dump($data);*/
 /*$data = $weixinIndex->getTempQrcodeTicket();
 var_dump($data);*/
 
-/*// 下面两句是一体的
-$data = $weixinIndex->getPermanentQrcodeTicket();
+// 下面两句是一体的
+/*$data = $weixinIndex->getPermanentQrcodeTicket();
 var_dump($data);*/
 
-$data = $weixinIndex->getSceneQrcode();
-var_dump($data);
+// 下面两句是一体的
+/*$data = $weixinIndex->getSceneQrcode();
+var_dump($data);*/
+
+$weixinIndex->replyScanSceneQrcode();

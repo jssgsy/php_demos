@@ -611,6 +611,33 @@ EOT;
             return $data;
         }
     }
+
+    /**
+     * 删除用户标签
+     */
+    public function deleteUserTag() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=' . $this->getAccessToken();
+        $postField = [
+            'tag' => [
+                'id' => 101
+            ]
+        ];
+        $postField = json_encode($postField);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postField);
+        /*
+         * {"errcode":0,"errmsg":"ok"}
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 删除用户标签失败';
+        } else {
+            return $data;
+        }
+    }
 }
 
 /**
@@ -687,6 +714,10 @@ var_dump($data);*/
 /*$data = $weixinIndex->createUserTag();
 var_dump($data);*/
 
-$data = $weixinIndex->getUserTag();
+// 下面两句是一体的
+/*$data = $weixinIndex->getUserTag();
+var_dump($data);*/
+
+$data = $weixinIndex->deleteUserTag();
 var_dump($data);
 

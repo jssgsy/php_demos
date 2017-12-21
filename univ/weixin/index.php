@@ -573,6 +573,44 @@ EOT;
             return $data;
         }
     }
+
+    /**
+     * 获取公众号已创建的标签
+     */
+    public function getUserTag() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/tags/get?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        /*
+         * count:此标签下的粉丝数
+         {
+            "tags":[
+                {
+                    "id":2,
+                    "name":"星标组",
+                    "count":0
+                },
+                {
+                    "id":100,
+                    "name":"family",
+                    "count":0
+                },
+                {
+                    "id":101,
+                    "name":"hangzhou",
+                    "count":0
+                }
+            ]
+        }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取用户标签失败';
+        } else {
+            return $data;
+        }
+    }
 }
 
 /**
@@ -645,6 +683,10 @@ var_dump($data);*/
 /*$data = $weixinIndex->deletePermanentMaterial();
 var_dump($data);*/
 
-$data = $weixinIndex->createUserTag();
+// 下面两句是一体的
+/*$data = $weixinIndex->createUserTag();
+var_dump($data);*/
+
+$data = $weixinIndex->getUserTag();
 var_dump($data);
 

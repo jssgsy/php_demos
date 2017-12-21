@@ -715,6 +715,74 @@ EOT;
         }
     }
 
+    /**
+     * 批量用户基本信息(UnionID机制),需要提供openid，openid可由getUserList方法获取
+     * post请求
+     */
+    public function batchGetUserBasicInfo() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=' . $this->getAccessToken();
+        // lang非必传
+        $postFields = [
+            'user_list' => [
+                ['openid' => 'oWcHH04vyv5XEV39j_J-5JbvyLxg','lang' => 'zh_CN'],
+                ['openid' => 'oWcHH06gpuc5CBUNdrbgzMpd-UZA','lang' => 'zh_CN']
+            ]
+        ];
+        $postFields = json_encode($postFields);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+        /*
+         * 返回的结构与getUserBasicInfo返回的结构一致，只是这里是一个数组
+         {
+            "user_info_list":[
+                {
+                    "subscribe":1,
+                    "openid":"oWcHH04vyv5XEV39j_J-5JbvyLxg",
+                    "nickname":"许亮",
+                    "sex":2,
+                    "language":"zh_CN",
+                    "city":"武汉",
+                    "province":"湖北",
+                    "country":"中国",
+                    "headimgurl":"http://wx.qlogo.cn/mmopen/XJukapsrvDZVyXG2PBTc6wrQEB4Qp5OOhiaMv8QKOib1ZRUbcGAvicS3nz1ick4y3icfkm7ibTK4NBFJVp5hFqznbic9iaIFxyNYCIvk/0",
+                    "subscribe_time":1512916771,
+                    "remark":"",
+                    "groupid":0,
+                    "tagid_list":[
+
+                    ]
+                },
+                {
+                    "subscribe":1,
+                    "openid":"oWcHH06gpuc5CBUNdrbgzMpd-UZA",
+                    "nickname":"贝店",
+                    "sex":0,
+                    "language":"zh_CN",
+                    "city":"",
+                    "province":"",
+                    "country":"",
+                    "headimgurl":"http://wx.qlogo.cn/mmopen/XJukapsrvDZiaYwGYWnkddzYPpIo68Yguodia9MVh5vaF2QhoYgLe636icef04xXPBZmtG2tNGaP0TMgyDDK7DicpUCiaBKbAMse5/0",
+                    "subscribe_time":1513067726,
+                    "remark":"",
+                    "groupid":0,
+                    "tagid_list":[
+
+                    ]
+                }
+            ]
+        }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取用户基本信息失败';
+        } else {
+            return $data;
+        }
+    }
+
 }
 
 /**
@@ -803,6 +871,10 @@ var_dump($data);*/
 /*$data = $weixinIndex->getUserList();
 var_dump($data);*/
 
-$data = $weixinIndex->getUserBasicInfo();
+// 下面两句是一体的
+/*$data = $weixinIndex->getUserBasicInfo();
+var_dump($data);*/
+
+$data = $weixinIndex->batchGetUserBasicInfo();
 var_dump($data);
 

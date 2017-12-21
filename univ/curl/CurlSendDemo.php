@@ -105,7 +105,7 @@ class CurlSendDemo {
     public function sendPostMethodWithImage() {
         $ch = curl_init();
         $filePath = realpath('hello.png');
-        // upload名称是自定义的
+        // upload名称是自定义的,php5.6以后不能使用@hello.png的方式了
         $postField = [
             'upload' => new CURLFile($filePath)
         ];
@@ -116,7 +116,7 @@ class CurlSendDemo {
         /*
          * 下面是返回的$_FILES
          * application/octet-stream：只能提交二进制，而且只能提交一个二进制，如果提交文件的话，只能提交一个文件,后台接收参数只能有一个
-         * tmp_name：服务器端可使用$_FILES['upload']['tmp_name']引入上传的文件，且利用move_uploaded_file方法将文件保存到另一个地方
+         * tmp_name：服务器端可使用$_FILES['upload']['tmp_name']引用上传的文件，此时可以利用move_uploaded_file方法将文件保存到另一个地方
          {
             "upload":{
                 "name":"hello.png",

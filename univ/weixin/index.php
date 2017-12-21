@@ -638,6 +638,38 @@ EOT;
             return $data;
         }
     }
+
+    /**
+     * 获取用户列表(openid)
+     */
+    public function getUserList() {
+        // next_openid,第一个拉取的OPENID，不填默认从头开始拉取
+        $url = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=' . $this->getAccessToken() . '&next_openid=';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        /*
+         * next_openid：拉取列表的最后一个用户的OPENID，可利用此循环获取所有的用户
+        {
+            "total":3,
+            "count":3,
+            "data":{
+                "openid":[
+                    "oWcHH04vyv5XEV39j_J-5JbvyLxg",
+                    "oWcHH0ztWUj0GydCCtl5Z8VU9iqY",
+                    "oWcHH06gpuc5CBUNdrbgzMpd-UZA"
+                ]
+            },
+            "next_openid":"oWcHH06gpuc5CBUNdrbgzMpd-UZA"
+        }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取用户列表失败';
+        } else {
+            return $data;
+        }
+    }
 }
 
 /**
@@ -718,6 +750,10 @@ var_dump($data);*/
 /*$data = $weixinIndex->getUserTag();
 var_dump($data);*/
 
-$data = $weixinIndex->deleteUserTag();
+// 下面两句是一体的
+/*$data = $weixinIndex->deleteUserTag();
+var_dump($data);*/
+
+$data = $weixinIndex->getUserList();
 var_dump($data);
 

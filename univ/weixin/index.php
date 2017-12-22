@@ -984,6 +984,42 @@ TAG;
         // file_put_contents('log', 'EventKey: ' . $eventKey . ' Ticket: ' . $ticket);
     }
 
+    /**
+     * 长链接转短链接
+     * 主要使用场景： 开发者用于生成二维码的原链接（商品、支付二维码等）太长导致扫码速度和成功率下降，
+     *  将原长链接通过此接口转成短链接再生成二维码将大大提升扫码速度和成功率。
+     */
+    public function longUrl2shortUrl() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/shorturl?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        /*
+         * action: 填long2short，代表长链接转短链接
+         */
+        $postFields = [
+            'action' => 'long2short',
+            'long_url' => 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQEj8TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyV3pPdlJCcDFmN2oxMDAwME0wM1MAAgT6sTtaAwQAAAAA'
+        ];
+        $postFields = json_encode($postFields);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+        /*
+        {
+            "errcode":0,
+            "errmsg":"ok",
+            "short_url":"https://w.url.cn/s/Apyc75i"
+        }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 长链接转短链接失败';
+        } else {
+            return $data;
+        }
+        curl_close($ch);
+    }
+
 }
 
 /**
@@ -1094,4 +1130,7 @@ var_dump($data);*/
 /*$data = $weixinIndex->getSceneQrcode();
 var_dump($data);*/
 
-$weixinIndex->replyScanSceneQrcode();
+//$weixinIndex->replyScanSceneQrcode();
+
+$data = $weixinIndex->longUrl2shortUrl();
+var_dump($data);

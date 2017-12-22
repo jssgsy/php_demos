@@ -1052,6 +1052,36 @@ TAG;
         curl_close($ch);
     }
 
+    /**
+     * 模板消息-获取行业信息
+     * 这里以获取上面设置的行业信息为例
+     */
+    public function getIndustry() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/template/get_industry?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        /*
+         {
+            "primary_industry":{
+                "first_class":"IT科技",
+                "second_class":"互联网|电子商务"
+            },
+            "secondary_industry":{
+                "first_class":"IT科技",
+                "second_class":"电子技术"
+            }
+        }
+         */
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 获取行业信息失败';
+        } else {
+            return $data;
+        }
+        curl_close($ch);
+    }
+
 }
 
 /**
@@ -1168,5 +1198,9 @@ var_dump($data);*/
 /*$data = $weixinIndex->longUrl2shortUrl();
 var_dump($data);*/
 
-$data = $weixinIndex->setIndustry();
+// 下面两句是一体的
+/*$data = $weixinIndex->setIndustry();
+var_dump($data);*/
+
+$data = $weixinIndex->getIndustry();
 var_dump($data);

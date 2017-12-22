@@ -1020,6 +1020,38 @@ TAG;
         curl_close($ch);
     }
 
+    /**
+     * 模板消息-设置行业信息
+     * 设置行业可在微信公众平台后台完成，每月可修改行业1次，帐号仅可使用所属行业中相关的模板，为方便第三方开发者，提供通过接口调用的方式来修改账号所属行业
+     */
+    public function setIndustry() {
+        $url = 'https://api.weixin.qq.com/cgi-bin/template/api_set_industry?access_token=' . $this->getAccessToken();
+        $ch = curl_init();
+        /*
+         * industry_id1、industry_id2：公众号模板消息所属行业编号
+         * 1：IT科技-》互联网/电子商务；
+         * 4：IT科技-》电子技术；
+         * 其它的需要参考微信官网；
+         */
+        $postFields = [
+            'industry_id1' => '1',
+            'industry_id2' => '4'
+        ];
+        $postFields = json_encode($postFields);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+        // {"errcode":0,"errmsg":"ok"}
+        $data = curl_exec($ch);
+        if (empty($data)) {
+            return 'o o, 设置行业信息失败';
+        } else {
+            return $data;
+        }
+        curl_close($ch);
+    }
+
 }
 
 /**
@@ -1132,5 +1164,9 @@ var_dump($data);*/
 
 //$weixinIndex->replyScanSceneQrcode();
 
-$data = $weixinIndex->longUrl2shortUrl();
+// 下面两句是一体的
+/*$data = $weixinIndex->longUrl2shortUrl();
+var_dump($data);*/
+
+$data = $weixinIndex->setIndustry();
 var_dump($data);

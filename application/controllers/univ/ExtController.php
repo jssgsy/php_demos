@@ -35,6 +35,7 @@ class ExtController extends My_Controller {
      * 测试如何使用新增的helper
      */
     public function demo_helper() {
+        // 这样加载也可以，$this->load->helper('univ')，helper内部会处理
         $this->load->helper('univ_helper');
 
         /**
@@ -56,6 +57,7 @@ class ExtController extends My_Controller {
          * 如果用的是$this->load->model('univ/DemoModel'),则用法为$this->DemoModel；
          * 如果用的是$this->load->model('univ/demomodel'),则用法为$this->demomodel；
          * 最保险的方法是，$this->load->model('文件名')，即文件名大写这里就大写，文件名小写这里就小写，这样就可以避免不同系统下区分大小写的坑
+         * 其实是，model方法内部会将model方法的参数(去掉其中的路径)直接赋值给$CI；
          */
         $this->DemoModel->func1();
     }
@@ -69,6 +71,12 @@ class ExtController extends My_Controller {
     }
 
     public function demo_config() {
+        /**
+         * 此时会同时加载两个文件：
+         *  1. application/config/univ/myconfig.php
+         *  2. application/config/ENVIRONMENT/univ/myconfig.php
+         * 即当前环境下对应的配置文件也会被加载
+         */
         $this->load->config('univ/myconfig');
         $name = $this->config->item('univ_name');
         $name_dev = $this->config->item('univ_name_dev');

@@ -16,6 +16,13 @@
  *
  */
 
+/**
+ * Class My_Controller
+ * @property CI_Loader $load
+ * @property CI_Config $config
+ * @property CI_Input $input
+ * @property CI_Output $output
+ */
 class My_Controller extends CI_Controller {
 
     public function __construct() {

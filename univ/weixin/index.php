@@ -2,9 +2,7 @@
 /**
  * 微信请求的入口，验证自己服务器url的有效性
  * url:http://45.78.19.224/php_demos/univ/weixin/index.php
- * User: Univ <minglu.liu@husor.com>
  * Date: 2017/12/11 19:18
- * @copyright Beidian Limited. All rights reserved.
  */
 class WeixinIndex {
 

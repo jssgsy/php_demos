@@ -12,7 +12,8 @@
  *  用户：test,密码：123，参见database.php文件
  *
  *
- *
+ * @property CI_Output $output
+ * @property CI_DB $db
  */
 class DBController extends CI_Controller {
 
@@ -29,6 +30,21 @@ class DBController extends CI_Controller {
          * database()方法内部会给CI_Controller对象添加db属性(具体是哪个类的对象是动态变化的，不用过于纠结，只需要知道与数据库打交道的是此db对象即可)
          */
         $this->load->database();
+    }
+
+    /**
+     * 测试CI提供的程序分析器CI_Profiler
+     * 只需要做一件事：就是在controller中设置$this->output->enable_profiler(TRUE);
+     * 当然有更多的选项可以控制哪些信息被输出，哪些不被输出；参见：https://codeigniter.org.cn/user_guide/general/profiling.html
+     * 不要以json格式输出，因为profiler的数据是以表格形式输出的，如果以json格式输出，则会看到很多table标签，这可能也是profiler的不足之处
+     */
+    public function testProfiler() {
+        // 只需要这一句
+        $this->output->enable_profiler(TRUE);
+        // 不要使用json格式
+        // $this->output->set_content_type('application/json');
+        $result = $this->db->get($this->table_name, 4, 0)->result();
+        $this->output->set_output(json_encode($result));
     }
 
     public function index() {

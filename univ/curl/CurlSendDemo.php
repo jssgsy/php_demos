@@ -2,7 +2,6 @@
 /**
  * 模拟curl发送请求
  * Created by PhpStorm.
- * User: minglu.liu
  * Date: 2017/6/1
  * Time: 10:43
  */

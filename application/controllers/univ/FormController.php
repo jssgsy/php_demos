@@ -1,7 +1,6 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: minglu.liu
  * Date: 2017/4/18
  * Time: 19:31
  */

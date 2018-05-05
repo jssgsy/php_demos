@@ -2,7 +2,7 @@
 
 /**
  * Created by PhpStorm.
- * User: minglu.liu
+ * User: Univ
  * Date: 2017/6/20
  * Time: 19:09
  * 学习CI中的表单验证,与form_validate.php一起使用

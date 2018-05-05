@@ -14,6 +14,7 @@
  *
  * @property CI_Output $output
  * @property CI_DB $db
+ * @property CI_Loader $load
  */
 class DBController extends CI_Controller {
 
